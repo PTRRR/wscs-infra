@@ -19,7 +19,7 @@ spec:
         - name: github-registry
       containers:
         - name: wscs-api
-          image: ghcr.io/ptrrr/wscs-api:sha-48f502c
+          image: ghcr.io/ptrrr/wscs-api:sha-2efd471
           ports:
             - containerPort: 3000
           env:
