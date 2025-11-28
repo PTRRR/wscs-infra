@@ -8,7 +8,7 @@ spec:
     namespace: wscs
     server: https://kubernetes.default.svc
   source:
-    path: prod/website
+    path: prod
     repoURL: https://github.com/PTRRR/wscs-infra
     targetRevision: HEAD
   sources: []
