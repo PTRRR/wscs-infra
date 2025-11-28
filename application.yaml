@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wscs
+  namespace: argocd
+spec:
+  destination:
+    namespace: wscs
+    server: https://kubernetes.default.svc
+  source:
+    path: prod/website
+    repoURL: https://github.com/PTRRR/wscs-infra
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    # automated:
+    #   enabled: false
+    syncOptions:
+      - CreateNamespace=true

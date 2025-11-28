@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wscs-app
+  namespace: wscs
+  labels:
+    app: wscs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wscs-app
+  template:
+    metadata:
+      labels:
+        app: wscs-app
+    spec:
+      imagePullSecrets:
+        - name: github-registry
+      containers:
+        - name: wscs-app
+          image: ghcr.io/ptrrr/wscs-app:main
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PUBLIC_STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: stripe-public-key
+
+            - name: PAYLOAD_INTERNAL_URL
+              value: "http://wscs-api-service"
+
+            # Static environment variables
+            - name: NODE_ENV
+              value: "production"
+
+            - name: HOST
+              value: "0.0.0.0"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "300m"
+            limits:
+              memory: "2048Mi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wscs-app-service
+  namespace: wscs
+  labels:
+    app: wscs-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app: wscs-app
